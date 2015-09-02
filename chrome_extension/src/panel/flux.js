@@ -1,6 +1,6 @@
 var Fluxxor = require("fluxxor");
 var Console = require("../utils/console");
-
+var _ = require("lodash");
 
 var constants = {
     ADD_REQUEST: "ADD_REQUEST"
@@ -57,6 +57,7 @@ chrome.devtools.network.addRequestHeaders({
 });
 
 chrome.devtools.network.onRequestFinished.addListener(function (request) {
-    flux.actions.addRequest(request);
+    var value = _.result(_.findWhere(request.response.headers, { 'name': 'X-CHROME-PANEL' }), 'value');
+    if (value) {flux.actions.addRequest(request)};
 });
 
