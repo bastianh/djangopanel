@@ -1,0 +1,6 @@
+chrome_extension/build
+
+node_modules
+*.iml
+.idea/
+

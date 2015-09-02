@@ -1,0 +1,16 @@
+{
+  "name": "DjangoPanel",
+  "version": "0.0.1",
+  "description": "DjangoPanel",
+  "devtools_page": "extension.html",
+  "background": { "scripts": ["background.js"] },
+  "permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "manifest_version": 2,
+  "web_accessible_resources":
+  [
+    "*"
+  ]
+}
