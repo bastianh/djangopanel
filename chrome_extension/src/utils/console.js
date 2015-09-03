@@ -13,11 +13,13 @@ Console.Type = {
 };
 
 Console.addMessage = function (type, format, args) {
-    chrome.extension.sendRequest({
-        command: "sendToConsole",
-        tabId: chrome.devtools.tabId,
-        args: escape(JSON.stringify(Array.prototype.slice.call(arguments, 0)))
-    });
+    if (chrome.devtools) {
+        chrome.extension.sendRequest({
+            command: "sendToConsole",
+            tabId: chrome.devtools.tabId,
+            args: escape(JSON.stringify(Array.prototype.slice.call(arguments, 0)))
+        });
+    }
 };
 
 // Generate Console output methods, i.e. Console.log(), Console.debug() etc.
@@ -29,4 +31,4 @@ Console.addMessage = function (type, format, args) {
     }
 })();
 
-module.exports = Console
+module.exports = Console;

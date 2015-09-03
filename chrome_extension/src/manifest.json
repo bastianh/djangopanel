@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "DjangoPanel",
   "devtools_page": "extension.html",
+  "options_page": "panel/djangopanel.html",
   "background": { "scripts": ["background.js"] },
   "permissions": [
     "http://*/*",

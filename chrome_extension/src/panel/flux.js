@@ -17,11 +17,13 @@ var RequestStore = Fluxxor.createStore({
     onAddRequest: function (payload) {
         var r = payload.request;
         this.requests.unshift({
+            key: r.connection,
             url: r.request.url,
             method: r.request.method,
             time: r.time,
             size: r.response.bodySize,
-            headers: r.response.headers
+            status: r.response.status,
+            data: payload.data
         });
         this.emit("change");
     },
@@ -34,7 +36,10 @@ var RequestStore = Fluxxor.createStore({
 
 var actions = {
     addRequest: function (request) {
-        this.dispatch(constants.ADD_REQUEST, {request: request});
+        var value = _.result(_.findWhere(request.response.headers, {'name': 'X-CHROME-PANEL'}), 'value');
+        if (value) {
+            this.dispatch(constants.ADD_REQUEST, {request: request, data:JSON.parse(unescape(value))});
+        }
     }
 };
 
@@ -44,20 +49,22 @@ var stores = {
 
 var flux = module.exports = new Fluxxor.Flux(stores, actions);
 
-/*
+
 flux.on("dispatch", function (type, payload) {
     if (Console && Console.log) {
         Console.log("[Dispatch]", type, payload);
     }
 });
-*/
 
-chrome.devtools.network.addRequestHeaders({
-    "X-DjangoPanel-Version": "0.0.1"
-});
 
-chrome.devtools.network.onRequestFinished.addListener(function (request) {
-    var value = _.result(_.findWhere(request.response.headers, { 'name': 'X-CHROME-PANEL' }), 'value');
-    if (value) {flux.actions.addRequest(request)};
-});
+if (chrome && chrome.devtools) {
+    chrome.devtools.network.addRequestHeaders({
+        "X-DjangoPanel-Version": "0.0.1"
+    });
+
+    chrome.devtools.network.onRequestFinished.addListener(function (request) {
+        flux.actions.addRequest(request)
+    });
+}
+
 
