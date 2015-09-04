@@ -11,19 +11,25 @@ var FluxMixin = Fluxxor.FluxMixin(React),
 var PTable = React.createClass({
 
     render: function () {
-        var textright = {textAlign: "right"}, textleft = {textAlign: "left"};
+        var col_rtime = {textAlign: "right", width: "40px"},
+            textleft = {textAlign: "left"},
+            col_status = {width: "40px"},
+            col_method = {width: "50px"};
         var highlightKey = null;
         if (this.props.highlightRequest) {
             highlightKey = this.props.highlightRequest.key;
         }
         return (
-            <table className="rtable">
+            <table id="requests" className="rtable">
+                <thead>
                 <tr key="head">
-                    <th>Status</th>
-                    <th style={textleft}>Url</th>
-                    <th>Method</th>
-                    <th>Resp.Time</th>
+                    <th style={{width:"30px"}}>Status</th>
+                    <th style={{textAlign:"left"}}>View</th>
+                    <th style={{width:"30px"}}>Method</th>
+                    <th style={{width:"30px"}}>Resp.Time</th>
                 </tr>
+                </thead>
+                <tbody>
                 {_.map(this.props.requests, function (r) {
                     var classString = "";
                     if (r.key == highlightKey) {
@@ -32,12 +38,13 @@ var PTable = React.createClass({
                     return (
                         <tr className={classString} key={r.key} onClick={this.props.handleClick.bind(this, r)}>
                             <td>{r.status}</td>
-                            <td style={textleft}>{r.url}</td>
-                            <td className={classString}>{r.method}</td>
-                            <td style={textright}>{r.time.toFixed(1)} ms</td>
+                            <td style={{textAlign:"left"}}>{r.data.view_func}</td>
+                            <td>{r.method}</td>
+                            <td>{r.time.toFixed(1)} ms</td>
                         </tr>
                     );
                 }, this)}
+                </tbody>
             </table>
         );
     }
@@ -48,8 +55,8 @@ var RequestPanel = React.createClass({
         var r = this.props.request;
         return (
             <div>
-                <div>{r.url}</div>
-                <table className="rtable">
+                <div><code>{JSON.stringify(r.data)}</code></div>
+                <table className="rtable mheight">
                     {_.map(r.data.panels, function (row) {
                         return (
                             <tr>
@@ -64,6 +71,7 @@ var RequestPanel = React.createClass({
     }
 });
 
+
 var Panel = React.createClass({
     getInitialState: function () {
         return {currentRequest: null}
@@ -73,7 +81,6 @@ var Panel = React.createClass({
     },
 
     render: function () {
-        var style = {padding:0};
         var rp;
         if (this.state.currentRequest) {
             rp = <RequestPanel request={this.state.currentRequest}/>
@@ -81,12 +88,12 @@ var Panel = React.createClass({
             rp = <div></div>
         }
         return (
-            <div>
-                <div style={style} className="col-sm-6">
+            <div id="container">
+                <div id="content_left">
                     <PTable handleClick={this.handleClick} highlightRequest={this.state.currentRequest}
                             requests={this.props.requests}/>
                 </div>
-                <div style={style} className="col-sm-6">
+                <div id="content_right">
                     {rp}
                 </div>
             </div>
@@ -109,4 +116,4 @@ var Application = React.createClass({
     }
 });
 
-React.render(<Application flux={flux}/>, document.getElementById('container'));
+React.render(<Application flux={flux}/>, document.getElementById('app'));

@@ -9,6 +9,7 @@ var constants = {
 
 var RequestStore = Fluxxor.createStore({
     initialize: function () {
+        this.requestId = 0;
         this.requests = [];
         this.bindActions(
             constants.ADD_REQUEST, this.onAddRequest
@@ -17,7 +18,7 @@ var RequestStore = Fluxxor.createStore({
     onAddRequest: function (payload) {
         var r = payload.request;
         this.requests.unshift({
-            key: r.connection,
+            key: this._nextRequestId(),
             url: r.request.url,
             method: r.request.method,
             time: r.time,
@@ -31,6 +32,9 @@ var RequestStore = Fluxxor.createStore({
         return {
             requests: this.requests
         };
+    },
+    _nextRequestId: function() {
+        return ++this.requestId;
     }
 });
 
